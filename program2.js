@@ -1,10 +1,27 @@
 const decodeTheRing = function (s, p) {
-  // Handle the case where p is greater than the length of s
-  if (s.length === 0) return '';
+  const m = s.length;
+  const n = p.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(false));
   
-  const n = s.length;
-  const effectiveIndex = p % n; // Ensure we stay within bounds
-  return s[effectiveIndex]; // Return the character at the effective index
+  dp[0][0] = true;
+
+  for (let j = 1; j <= n; j++) {
+      if (p[j - 1] === '*') {
+          dp[0][j] = dp[0][j - 1];
+      }
+  }
+
+  for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+          if (p[j - 1] === s[i - 1] || p[j - 1] === '?') {
+              dp[i][j] = dp[i - 1][j - 1];
+          } else if (p[j - 1] === '*') {
+              dp[i][j] = dp[i][j - 1] || dp[i - 1][j];
+          }
+      }
+  }
+
+  return dp[m][n];
 };
 
 module.exports = decodeTheRing;
